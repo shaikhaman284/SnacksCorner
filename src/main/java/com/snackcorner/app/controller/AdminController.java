@@ -44,8 +44,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
@@ -69,21 +69,34 @@ public class AdminController {
         return "admin";
     }
 
-    @PostMapping(value = "/customerOrders", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> viewCustomerOrders(@RequestParam("id") Long userId) {
-        Map<String, Object> response = new HashMap<>();
-
+    @PostMapping("/customerOrders")
+    public ResponseEntity<String> viewCustomerOrders(@RequestParam Long userId) {
         if (userId == null || userId <= 0) {
-            response.put("orders", Collections.emptyList());
-            response.put("customerName", "Unknown");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok("<h4>No orders found</h4>");
         }
 
         List<OrderM> orders = orderService.getOrdersByUserId(userId);
-        response.put("orders", orders);
-        response.put("customerName", userService.getUserById(userId).getName());
+        User user = userService.getUserById(userId);
 
-        return ResponseEntity.ok(response); // Ensures JSON response
+        StringBuilder htmlResponse = new StringBuilder();
+        htmlResponse.append("<h4>Customer Name: ").append(user.getName()).append("</h4>");
+        htmlResponse.append("<table border='1'><tr><th>Order ID</th><th>Snack Name</th><th>Price</th><th>Order Date</th></tr>");
+
+        if (orders.isEmpty()) {
+            htmlResponse.append("<tr><td colspan='4'>No orders found</td></tr>");
+        } else {
+            for (OrderM order : orders) {
+                htmlResponse.append("<tr>")
+                        .append("<td>").append(order.getOrderId()).append("</td>")
+                        .append("<td>").append(order.getSnack().getName()).append("</td>")
+                        .append("<td>").append(order.getSnack().getPrice()).append("</td>")
+                        .append("<td>").append(order.getOrderDate()).append("</td>")
+                        .append("</tr>");
+            }
+        }
+        htmlResponse.append("</table>");
+
+        return ResponseEntity.ok(htmlResponse.toString());
     }
 
     @PostMapping("/admin/addSnack")
