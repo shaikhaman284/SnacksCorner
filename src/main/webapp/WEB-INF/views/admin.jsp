@@ -9,13 +9,25 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin Dashboard - Snacks Corner</title>
-        <link rel="stylesheet" href="<c:url value='/static/css/styles.css'/>">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+        <!-- Bootstrap CSS (Choose one version, Bootstrap 4.6.2 for stability) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="<c:url value='/static/css/styles.css'/>">
+
+        <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MlJ2e5u42zFoCT8FFjR61F6S9FFb8PHi9EUzQwZxuJ77Gq8gVv8HZoG56CVXU6fK" crossorigin="anonymous">
+
+        <!-- jQuery (Load only once before Bootstrap) -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap JS Bundle (Includes Popper.js) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Prevent favicon.ico 404 error -->
+        <link rel="icon" href="data:," />
+
         <style>
             * {
                 margin: 0;
@@ -253,6 +265,24 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+
+            .modal-backdrop {
+                z-index: 1040 !important;
+            }
+            .modal {
+                z-index: 1050 !important;
+            }
+
+            section {
+                width: 100%; /* Set width as needed */
+                height: 550px; /* Fixed height to enable scrolling */
+                overflow-y: auto; /* Vertical scroll */
+                overflow-x: hidden; /* Hide horizontal scroll */
+                 /* Optional: Just for visibility */
+                
+                
+            }
+
         </style>
     </head>
     <body>
@@ -426,7 +456,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Orders for <span id="customerName">${customerName}</span></h5>
+                            <h5 class="modal-title">Orders for <span id="customerName"></span></h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -441,15 +471,8 @@
                                         <th>Order Date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <c:forEach var="order" items="${orders}">
-                                        <tr>
-                                            <td>${order.orderId}</td>
-                                            <td>${order.snack.name}</td>
-                                            <td>${order.snack.price}</td>
-                                            <td>${order.orderDate}</td>
-                                        </tr>
-                                    </c:forEach>
+                                <tbody id="ordersTableBody">
+                                    <!-- Orders will be dynamically inserted here -->
                                 </tbody>
                             </table>
                         </div>
@@ -457,142 +480,114 @@
                 </div>
             </div>
 
-            <!-- Automatically Show Modal if Orders Exist -->
-            <c:if test="${not empty orders}">
-                <script>
-                    $(document).ready(function () {
-                        $("#ordersModal").modal("show");
-                    });
-                </script>
-            </c:if>
-
-
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-3yR1c3V1XERXkNUV4R+K6iO+IDbN4C5Q7C6WVY7dU9DHS2w7K2DZo6/qCpH8z9Jo" crossorigin="anonymous"></script>
         <script>
-                    $(document).ready(function () {
-                        $('.edit').on('click', function () {
-                            const snackId = $(this).data('id');
-                            const snackName = $(this).data('name');
-                            const snackPrice = $(this).data('price');
-                            const snackDescription = $(this).data('description');
-                            const snackCategory = $(this).data('category');
+            $(document).ready(function () {
+                $('.edit').on('click', function () {
+                    const snackId = $(this).data('id');
+                    const snackName = $(this).data('name');
+                    const snackPrice = $(this).data('price');
+                    const snackDescription = $(this).data('description');
+                    const snackCategory = $(this).data('category');
 
-                            $('#editSnackId').val(snackId);
-                            $('#editSnackName').val(snackName);
-                            $('#editSnackPrice').val(snackPrice);
-                            $('#editSnackDescription').val(snackDescription);
-                            $('#editSnackCategory').val(snackCategory);
+                    $('#editSnackId').val(snackId);
+                    $('#editSnackName').val(snackName);
+                    $('#editSnackPrice').val(snackPrice);
+                    $('#editSnackDescription').val(snackDescription);
+                    $('#editSnackCategory').val(snackCategory);
 
-                            $('#editSnackModal').css('display', 'block');
-                        });
+                    $('#editSnackModal').css('display', 'block');
+                });
 
-                        $('.close').on('click', function () {
-                            $('#editSnackModal').css('display', 'none');
-                        });
+                $('.close').on('click', function () {
+                    $('#editSnackModal').css('display', 'none');
+                });
 
-                        $(window).on('click', function (event) {
-                            if ($(event.target).is('#editSnackModal')) {
-                                $('#editSnackModal').css('display', 'none');
-                            }
-                        });
+                $(window).on('click', function (event) {
+                    if ($(event.target).is('#editSnackModal')) {
+                        $('#editSnackModal').css('display', 'none');
+                    }
+                });
 
-                        $('#editSnackForm').on('submit', function (event) {
-                            event.preventDefault();
-                            // Perform AJAX form submission here if needed
-                            this.submit();
-                        });
-                    });
+                $('#editSnackForm').on('submit', function (event) {
+                    event.preventDefault();
+                    // Perform AJAX form submission here if needed
+                    this.submit();
+                });
+            });
 
-                    function deleteSnack(snackId) {
-                        if (confirm('Are you sure you want to delete this snack?')) {
-                            window.location.href = 'admin/deleteSnack?id=' + snackId;
-                        }
+            function deleteSnack(snackId) {
+                if (confirm('Are you sure you want to delete this snack?')) {
+                    window.location.href = 'admin/deleteSnack?id=' + snackId;
+                }
+            }
+
+            $(document).ready(function () {
+                $('#addSnackForm').on('submit', function (event) {
+                    event.preventDefault(); // Prevent normal form submission
+
+                    let formData = new FormData(this); // Automatically captures all form fields
+
+                    // Debug: Print form data to check values
+                    for (let pair of formData.entries()) {
+                        console.log(pair[0] + ', ' + pair[1]);
                     }
 
-                    $(document).ready(function () {
-                        $('#addSnackForm').on('submit', function (event) {
-                            event.preventDefault(); // Prevent normal form submission
-
-                            let formData = new FormData(this); // Automatically captures all form fields
-
-                            // Debug: Print form data to check values
-                            for (let pair of formData.entries()) {
-                                console.log(pair[0] + ', ' + pair[1]);
-                            }
-
-                            $.ajax({
-                                url: "http://localhost:8080/SnacksCorner/admin/addSnack",
-                                type: "POST",
-                                data: formData,
-                                processData: false, // Prevents jQuery from converting the data into a query string
-                                contentType: false, // Prevents jQuery from setting content type (it must be multipart/form-data)
-                                success: function (response) {
-                                    alert("Snack added successfully!");
-                                    location.reload(); // Reload page after success
-                                },
-                                error: function (xhr, status, error) {
-                                    console.error("Error:", xhr.responseText);
-                                    alert("Failed to add snack: " + xhr.responseText);
-                                }
-                            });
-                        });
+                    $.ajax({
+                        url: "http://localhost:8080/SnacksCorner/admin/addSnack",
+                        type: "POST",
+                        data: formData,
+                        processData: false, // Prevents jQuery from converting the data into a query string
+                        contentType: false, // Prevents jQuery from setting content type (it must be multipart/form-data)
+                        success: function (response) {
+                            alert("Snack added successfully!");
+                            location.reload(); // Reload page after success
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error:", xhr.responseText);
+                            alert("Failed to add snack: " + xhr.responseText);
+                        }
                     });
+                });
+            });
 
 
 
         </script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
         <script>
-                            $(document).ready(function () {
-                                $(".view-orders-btn").click(function (e) {
-                                    e.preventDefault(); // Prevent form submission
-                                    var userId = $(this).data("userid");
+            $(document).ready(function () {
+                $(".view-orders-btn").click(function (e) {
+                    e.preventDefault();
+                    var userId = $(this).data("userid");
 
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "http://localhost:8080/SnacksCorner/admin/customerOrders",
-                                        data: {id: userId},
-                                        dataType: "json",
-                                        contentType: "application/x-www-form-urlencoded", // Important for form data
-                                        headers: {
-                                            "Accept": "application/json"  // Ensures server returns JSON
-                                        },
-                                        success: function (response) {
-                                            console.log(response); // Debugging
+                    $.ajax({
+                        type: "POST",
+                        url: "http://localhost:8080/SnacksCorner/admin/customerOrders?userId=" + userId,
+                        success: function (response) {
+                            console.log(response);
 
-                                            // Update modal content
-                                            $("#customerName").text(response.customerName);
-                                            var ordersTableBody = $("#ordersModal tbody");
-                                            ordersTableBody.empty();
+                            // Inject response HTML into modal
+                            $("#ordersModal .modal-body").html(response);
 
-                                            if (response.orders.length > 0) {
-                                                $.each(response.orders, function (index, order) {
-                                                    ordersTableBody.append(
-                                                            "<tr>" +
-                                                            "<td>" + order.orderId + "</td>" +
-                                                            "<td>" + order.snack.name + "</td>" +
-                                                            "<td>" + order.snack.price + "</td>" +
-                                                            "<td>" + order.orderDate + "</td>" +
-                                                            "</tr>"
-                                                            );
-                                                });
-                                            } else {
-                                                ordersTableBody.append("<tr><td colspan='4'>No orders found</td></tr>");
-                                            }
+                            // Show modal
+                            $("#ordersModal").modal("show");
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error fetching orders:", xhr.responseText);
+                            alert("Failed to fetch orders. Check console for details.");
+                        }
+                    });
+                });
 
-                                            $("#ordersModal").modal("show");
-                                        },
-                                        error: function (xhr, status, error) {
-                                            console.error("Error fetching orders:", xhr.responseText);
-                                            alert("Failed to fetch orders. Check console for details.");
-                                        }
-                                    });
-                                });
-                            });
+                // Fix modal backdrop issue on close
+                $("#ordersModal").on('hidden.bs.modal', function () {
+                    $(".modal-backdrop").remove();
+                });
+            });
         </script>
+
 
 
     </body>
