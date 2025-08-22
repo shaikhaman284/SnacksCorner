@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/")
 public class MainController {
 
     private final UserService userService;
@@ -32,10 +34,11 @@ public class MainController {
         this.snackService= snackService;
     }
 
-    // Display the home page
+
     @GetMapping("/home")
     public String home(Model model) {
-        
+        List<Snack> snacks = snackService.getAllSnacks();
+        model.addAttribute("snacks", snacks);
         model.addAttribute("message", "Welcome to Snacks Corner!");
         return "home";
     }

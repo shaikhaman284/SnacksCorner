@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/")
 public class AdminController {
 
     @Autowired
@@ -63,7 +63,6 @@ public class AdminController {
     @GetMapping("/admin")
     public String getAdminDashboard(Model model) {
         model.addAttribute("snacks", snackService.getAllSnacks());
-
         model.addAttribute("customers", userService.listAllUsers());
         model.addAttribute("orders", orderService.getAllOrders());
         return "admin";
@@ -148,30 +147,71 @@ public class AdminController {
         }
     }
 
-// Update Snack: Process Edit Form Submission
+    // ✅ UPDATED: Enhanced updateSnack method with optional image upload support
     @PostMapping("/admin/updateSnack")
-    public String updateSnack(@Valid
-            @ModelAttribute("snack") Snack snack, BindingResult result,
-            Model model, RedirectAttributes redirectAttributes
-    ) {
-        if (result.hasErrors()) {
-            model.addAttribute("error", "Validation errors occurred. Snack not updated.");
-            return "admin";  // Return to the admin page if there are validation errors
-        }
+    public ResponseEntity<String> updateSnack(
+            @RequestParam("snackid") Long snackId,
+            @RequestParam("name") String name,
+            @RequestParam("price") String price,
+            @RequestParam("description") String description,
+            @RequestParam("category") String category,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+            HttpServletRequest request) {
+
         try {
+            double snackPriced = Double.parseDouble(price);
+            BigDecimal snackPrice = BigDecimal.valueOf(snackPriced);
+
+            // Get existing snack
+            Snack snack = snackService.getSnackById(snackId);
+            if (snack == null) {
+                return ResponseEntity.badRequest().body("Snack not found!");
+            }
+
+            // Update basic snack details
+            snack.setName(name);
+            snack.setPrice(snackPrice);
+            snack.setDescription(description);
+            snack.setCategory(category);
+
+            // ✅ Handle optional image upload
+            if (imageFile != null && !imageFile.isEmpty()) {
+                // Get upload directory
+                String uploadDir = request.getServletContext().getRealPath("/static/uploaded-img/");
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Generate unique filename
+                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+                
+                // Save the new image file
+                Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Update image path in snack object
+                String imageUrl = "/static/uploaded-img/" + fileName;
+                snack.setImagePath(imageUrl);
+            }
+            // If no image file provided, keep existing image path
+
+            // Save updated snack
             snackService.updateSnack(snack);
-            redirectAttributes.addFlashAttribute("message", "Snack updated successfully!");
-            return "redirect:/admin";
+
+            return ResponseEntity.ok("Snack updated successfully!");
+
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid price format!");
         } catch (Exception e) {
-            model.addAttribute("error", "Failed to update snack.");
-            return "admin";  // Return to the admin page if update fails
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update snack: " + e.getMessage());
         }
     }
 
     // Delete Snack: Process Delete Request
-    @GetMapping("/deleteSnack")
-    public String deleteSnack(@RequestParam("id") Long snackId, RedirectAttributes redirectAttributes
-    ) {
+    @GetMapping("/admin/deleteSnack")
+    public String deleteSnack(@RequestParam("id") Long snackId, RedirectAttributes redirectAttributes) {
         try {
             snackService.deleteSnack(snackId);
             redirectAttributes.addFlashAttribute("message", "Snack deleted successfully!");
@@ -182,8 +222,7 @@ public class AdminController {
     }
 
     @PostMapping("/adminLogout")
-    public String adminLogout(HttpSession session
-    ) {
+    public String adminLogout(HttpSession session) {
         session.removeAttribute("adminUser");
         session.invalidate();
         return "redirect:/login";

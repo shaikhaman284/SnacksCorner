@@ -40,14 +40,22 @@ public class SnackServiceImpl implements SnackService {
     }
 
     @Override
-    public void updateSnack(Snack updatedSnack) {
-        Snack existingSnack = snackDAO.findById(updatedSnack.getSnackid());
-        if (existingSnack != null) {
-            existingSnack.setName(updatedSnack.getName());
-            existingSnack.setPrice(updatedSnack.getPrice());
-            existingSnack.setCategory(updatedSnack.getCategory());
-            existingSnack.setDescription(updatedSnack.getDescription());
-            snackDAO.save(existingSnack);  // Save updated snack details
+public void updateSnack(Snack updatedSnack) {
+    Snack existingSnack = snackDAO.findById(updatedSnack.getSnackid());
+    if (existingSnack != null) {
+        existingSnack.setName(updatedSnack.getName());
+        existingSnack.setPrice(updatedSnack.getPrice());
+        existingSnack.setCategory(updatedSnack.getCategory());
+        existingSnack.setDescription(updatedSnack.getDescription());
+        
+        // ✅ ADDED: Update image path if provided
+        if (updatedSnack.getImagePath() != null && !updatedSnack.getImagePath().trim().isEmpty()) {
+            existingSnack.setImagePath(updatedSnack.getImagePath());
         }
+        // If imagePath is null or empty, keep the existing image path unchanged
+        
+        snackDAO.save(existingSnack);  // Save updated snack details
+    }
+
     }
 }
