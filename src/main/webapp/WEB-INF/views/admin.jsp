@@ -896,7 +896,7 @@
                     </div>
                     <div class="modal-body">
                         <form id="editSnackForm" class="edit-snack-form" action="admin/updateSnack" method="post" enctype="multipart/form-data">
-                            <input type="text" id="editSnackId" name="snackid">
+                            <input type="hidden" id="editSnackId" name="snackid">
 
                             <div class="form-group">
                                 <label for="editSnackName">🏷️ Snack Name:</label>
