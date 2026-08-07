@@ -4,10 +4,3 @@ services:
     env: docker
     dockerfilePath: Dockerfile
     plan: starter
-    envVars:
-      - key: DB_URL
-        value: "jdbc:mysql://<HOST>:<PORT>/snackcornerdb"
-      - key: DB_USERNAME
-        value: "root"
-      - key: DB_PASSWORD
-        value: "6967"

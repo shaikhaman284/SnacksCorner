@@ -1,6 +1,9 @@
 # SnacksCorner
 A Spring web application built with Maven, Spring MVC, and Hibernate.
 
+## Deployment guide
+For a complete deployment guide, see `DEPLOYMENT.md`.
+
 ## Render deployment
 This project is prepared to deploy on Render using Docker.
 
@@ -12,9 +15,10 @@ This project is prepared to deploy on Render using Docker.
 ### Environment variables
 The application uses environment variables for database configuration. Set these on Render or in your environment:
 - `DB_URL` — JDBC URL for MySQL (default: `jdbc:mysql://localhost:3306/snackcornerdb`)
+- `DATABASE_URL` — alternate JDBC URL for MySQL (used if `DB_URL` is not set)
 - `DB_USERNAME` — database username (default: `root`)
 - `DB_PASSWORD` — database password (default: `6967`)
-- `HIBERNATE_DIALECT` — Hibernate SQL dialect (default: `org.hibernate.dialect.MySQL8Dialect`)
+- `HIBERNATE_DIALECT` — Hibernate SQL dialect (default: `org.hibernate.dialect.MySQLDialect`)
 - `HIBERNATE_SHOW_SQL` — enable SQL logging (default: `false`)
 - `HIBERNATE_DDL_AUTO` — schema generation strategy (default: `validate`)
 
@@ -23,6 +27,9 @@ Example Render MySQL URL:
 ```
 jdbc:mysql://<HOST>:<PORT>/snackcornerdb
 ```
+
+> On Render, do not leave `DB_URL` as `jdbc:mysql://<HOST>:<PORT>/snackcornerdb`.
+> You must configure the actual database host, port, username, and password in the Render environment.
 
 ### Local development with Docker Compose
 Run the app and MySQL locally:
