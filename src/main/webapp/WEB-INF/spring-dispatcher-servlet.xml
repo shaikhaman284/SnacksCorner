@@ -15,6 +15,7 @@
 
     <!-- Enable component scanning -->
     <context:component-scan base-package="com.snackcorner.app" />
+    <context:property-placeholder ignore-unresolvable="true" system-properties-mode="ENVIRONMENT" />
 
     <!-- Enable Spring MVC -->
     <mvc:annotation-driven />
@@ -28,9 +29,9 @@
     <!-- Database Configuration -->
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/snackcornerdb" />
-        <property name="username" value="root" />
-        <property name="password" value="6967" />
+        <property name="url" value="${DB_URL:jdbc:mysql://localhost:3306/snackcornerdb}" />
+        <property name="username" value="${DB_USERNAME:root}" />
+        <property name="password" value="${DB_PASSWORD:6967}" />
     </bean>
 
     <!-- Hibernate SessionFactory -->
@@ -39,9 +40,9 @@
         <property name="packagesToScan" value="com.snackcorner.app.model" />
         <property name="hibernateProperties">
             <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
-                <prop key="hibernate.show_sql">true</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.dialect">${HIBERNATE_DIALECT:org.hibernate.dialect.MySQL8Dialect}</prop>
+                <prop key="hibernate.show_sql">${HIBERNATE_SHOW_SQL:false}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${HIBERNATE_DDL_AUTO:validate}</prop>
             </props>
         </property>
     </bean>
