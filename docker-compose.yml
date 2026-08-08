@@ -2,25 +2,24 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:15
     environment:
-      MYSQL_DATABASE: snackcornerdb
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_USER: root
-      MYSQL_PASSWORD: rootpassword
+      POSTGRES_DB: snackcornerdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data:/var/lib/postgresql/data
 
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      DB_URL: jdbc:mysql://db:3306/snackcornerdb
-      DB_USERNAME: root
-      DB_PASSWORD: rootpassword
+      DB_URL: jdbc:postgresql://db:5432/snackcornerdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
       HIBERNATE_SHOW_SQL: "false"
       HIBERNATE_DDL_AUTO: update
     depends_on:

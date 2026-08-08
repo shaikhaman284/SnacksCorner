@@ -6,36 +6,36 @@ This guide describes how to deploy SnacksCorner on both local Docker and Render.
 - Java 17
 - Maven
 - Docker
-- A MySQL-compatible database (local or Render managed database)
+- A PostgreSQL database (local or Render managed database)
 
 ## 2. Project files for deployment
 - `Dockerfile` — builds the WAR and runs the app in Tomcat 11
 - `.dockerignore` — excludes build artifacts from the Docker context
-- `docker-compose.yml` — local Docker Compose stack with MySQL + app
+- `docker-compose.yml` — local Docker Compose stack with PostgreSQL + app
 - `render.yaml` — Render web service configuration for Docker deployment
 - `src/main/webapp/WEB-INF/spring-dispatcher-servlet.xml` — loads database config from environment variables
 
 ## 3. Database environment variables
 The application supports these variables:
 
-- `DB_URL` — primary JDBC URL for MySQL
+- `DB_URL` — primary JDBC URL (PostgreSQL)
 - `DATABASE_URL` — fallback JDBC URL if `DB_URL` is not set
 - `DB_USERNAME` — database username
 - `DB_PASSWORD` — database password
-- `HIBERNATE_DIALECT` — Hibernate dialect (default: `org.hibernate.dialect.MySQLDialect`)
+- `HIBERNATE_DIALECT` — Hibernate dialect (default: `org.hibernate.dialect.PostgreSQLDialect`)
 - `HIBERNATE_SHOW_SQL` — whether to log SQL statements (default: `false`)
 - `HIBERNATE_DDL_AUTO` — schema generation strategy (`validate` by default)
 
 ### Example JDBC URL
 
 ```text
-jdbc:mysql://<HOST>:<PORT>/snackcornerdb
+jdbc:postgresql://<HOST>:<PORT>/snackcornerdb
 ```
 
 > Use your actual database host and port values. Do not keep placeholder values in production.
 
 ## 4. Local development with Docker Compose
-This repository includes a `docker-compose.yml` that starts a MySQL database and the app.
+This repository includes a `docker-compose.yml` that starts a local database and the app. For Render deployments use the managed PostgreSQL service (see below).
 
 Run:
 
@@ -50,11 +50,12 @@ http://localhost:8080
 ```
 
 ### Local database credentials
-- DB user: `root`
-- DB password: `rootpassword`
+Adjust `docker-compose.yml` for PostgreSQL if you run locally; example credentials often are:
+- DB user: `postgres`
+- DB password: `postgres`
 - DB name: `snackcornerdb`
 
-These values are configured in `docker-compose.yml`.
+These values can be configured in `docker-compose.yml` for local testing.
 
 ## 5. Building locally
 If you prefer not to use Docker Compose, build the app locally with JDK 17:
@@ -68,9 +69,9 @@ Run the app in Docker with environment variables:
 ```bash
 docker build -t snackscorner .
 docker run -p 8080:8080 \
-  --env DB_URL="jdbc:mysql://localhost:3306/snackcornerdb" \
-  --env DB_USERNAME=root \
-  --env DB_PASSWORD=6967 \
+  --env DB_URL="jdbc:postgresql://localhost:5432/snackcornerdb" \
+  --env DB_USERNAME=postgres \
+  --env DB_PASSWORD=postgres \
   snackscorner
 ```
 
@@ -98,10 +99,10 @@ Render supports Docker deployments using a `Dockerfile`.
 - Do not hardcode database host or password in source control.
 
 ## 7. Render managed database
-If you use Render's managed MySQL database, set `DB_URL` to the connection string provided by Render. It may look like:
+If you use Render's managed PostgreSQL database, Render will provide a `DATABASE_URL` environment variable. Use that, or set `DB_URL` to the connection string provided by Render. It may look like:
 
 ```text
-jdbc:mysql://<db-host>:<port>/<database-name>
+jdbc:postgresql://<db-host>:<port>/<database-name>
 ```
 
 Then configure:
@@ -110,7 +111,7 @@ Then configure:
 
 ## 8. Troubleshooting
 ### `Communications link failure`
-This means the app cannot connect to the MySQL instance.
+This means the app cannot connect to the PostgreSQL instance.
 
 Check:
 - `DB_URL`/`DATABASE_URL` are correct

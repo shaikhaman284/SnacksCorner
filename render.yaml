@@ -4,3 +4,8 @@ services:
     env: docker
     dockerfilePath: Dockerfile
     plan: starter
+databases:
+  - type: postgres
+    name: snackscorner-db
+    plan: starter
+    postgresVersion: "15"

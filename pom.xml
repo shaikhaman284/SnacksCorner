@@ -30,11 +30,11 @@
             <version>2.0.0</version> <!-- Updated to the latest version -->
         </dependency>
 
-        <!-- MySQL Connector -->
+        <!-- PostgreSQL JDBC Driver -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.32</version> <!-- Latest version -->
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version>
         </dependency>
 
         <!-- Spring Core and Web MVC -->

@@ -14,25 +14,25 @@ This project is prepared to deploy on Render using Docker.
 
 ### Environment variables
 The application uses environment variables for database configuration. Set these on Render or in your environment:
-- `DB_URL` — JDBC URL for MySQL (default: `jdbc:mysql://localhost:3306/snackcornerdb`)
-- `DATABASE_URL` — alternate JDBC URL for MySQL (used if `DB_URL` is not set)
-- `DB_USERNAME` — database username (default: `root`)
-- `DB_PASSWORD` — database password (default: `6967`)
-- `HIBERNATE_DIALECT` — Hibernate SQL dialect (default: `org.hibernate.dialect.MySQLDialect`)
+- `DB_URL` — JDBC URL for the database (default: `jdbc:postgresql://localhost:5432/snackcornerdb`)
+- `DATABASE_URL` — alternate JDBC URL (Render typically provides this for Postgres)
+- `DB_USERNAME` — database username (default: `postgres`)
+- `DB_PASSWORD` — database password (default: `postgres`)
+- `HIBERNATE_DIALECT` — Hibernate SQL dialect (default: `org.hibernate.dialect.PostgreSQLDialect`)
 - `HIBERNATE_SHOW_SQL` — enable SQL logging (default: `false`)
 - `HIBERNATE_DDL_AUTO` — schema generation strategy (default: `validate`)
 
-Example Render MySQL URL:
+Example Render PostgreSQL URL:
 
 ```
-jdbc:mysql://<HOST>:<PORT>/snackcornerdb
+jdbc:postgresql://<HOST>:<PORT>/snackcornerdb
 ```
 
-> On Render, do not leave `DB_URL` as `jdbc:mysql://<HOST>:<PORT>/snackcornerdb`.
+> On Render, do not leave `DB_URL` as a placeholder; use the actual `DATABASE_URL` or Postgres connection string provided by Render.
 > You must configure the actual database host, port, username, and password in the Render environment.
 
 ### Local development with Docker Compose
-Run the app and MySQL locally:
+Run the app and local database with Docker Compose:
 
 ```bash
 docker compose up --build
@@ -62,8 +62,8 @@ To run locally via Docker:
 ```bash
 docker build -t snackscorner .
 docker run -p 8080:8080 \
-  --env DB_URL="jdbc:mysql://localhost:3306/snackcornerdb" \
-  --env DB_USERNAME=root \
-  --env DB_PASSWORD=6967 \
+  --env DB_URL="jdbc:postgresql://localhost:5432/snackcornerdb" \
+  --env DB_USERNAME=postgres \
+  --env DB_PASSWORD=postgres \
   snackscorner
 ```

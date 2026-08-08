@@ -26,12 +26,12 @@
         <property name="suffix" value=".jsp" />
     </bean>
 
-    <!-- Database Configuration -->
+    <!-- Database Configuration (PostgreSQL for Render) -->
     <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
-        <property name="url" value="${DB_URL:${DATABASE_URL:jdbc:mysql://localhost:3306/snackcornerdb}}" />
-        <property name="username" value="${DB_USERNAME:root}" />
-        <property name="password" value="${DB_PASSWORD:6967}" />
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="${DB_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/snackcornerdb}}" />
+        <property name="username" value="${DB_USERNAME:postgres}" />
+        <property name="password" value="${DB_PASSWORD:}" />
     </bean>
 
     <!-- Hibernate SessionFactory -->
@@ -40,7 +40,7 @@
         <property name="packagesToScan" value="com.snackcorner.app.model" />
         <property name="hibernateProperties">
             <props>
-                <prop key="hibernate.dialect">${HIBERNATE_DIALECT:org.hibernate.dialect.MySQLDialect}</prop>
+                <prop key="hibernate.dialect">${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}</prop>
                 <prop key="hibernate.show_sql">${HIBERNATE_SHOW_SQL:false}</prop>
                 <prop key="hibernate.hbm2ddl.auto">${HIBERNATE_DDL_AUTO:validate}</prop>
             </props>
