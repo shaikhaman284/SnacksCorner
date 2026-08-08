@@ -5,6 +5,7 @@ import com.snackcorner.app.model.User;
 import com.snackcorner.app.service.SnackService;
 import com.snackcorner.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,9 +25,12 @@ public class MainController {
     private final UserService userService;
     private final SnackService snackService;
 
-    // Static admin credentials
-    private static final String ADMIN_ID = "admin@snackcorner.com";
-    private static final String ADMIN_PASSWORD = "admin123";
+    // Admin credentials from environment (defaults for local dev)
+    @Value("${ADMIN_ID:admin@snackcorner.com}")
+    private String ADMIN_ID;
+
+    @Value("${ADMIN_PASSWORD:admin123}")
+    private String ADMIN_PASSWORD;
 
     @Autowired
     public MainController(UserService userService, SnackService snackService) {
@@ -107,16 +111,11 @@ public class MainController {
     // Handle admin login
     @PostMapping("/adminLogin")
     public String loginAdmin(@ModelAttribute("user") User user, Model model, HttpSession session) {
-        System.out.println("Admin login attempt with ID: " + user.getLoginId()); // Debug log
-        System.out.println("Admin login attempt with Password: " + user.getPassword()); // Debug log
-
         if (ADMIN_ID.equals(user.getLoginId()) && ADMIN_PASSWORD.equals(user.getPassword())) {
             session.setAttribute("adminUser", "Admin");
-            System.out.println("Admin login successful"); // Debug log
             return "redirect:/admin"; // Redirect to admin module page after successful admin login
         } else {
             model.addAttribute("error", "Invalid admin credentials. Please try again.");
-            System.out.println("Admin login failed"); // Debug log
             return "login";
         }
     }

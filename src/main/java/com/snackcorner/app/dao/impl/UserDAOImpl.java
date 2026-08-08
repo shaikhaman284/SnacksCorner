@@ -44,9 +44,8 @@ public class UserDAOImpl implements UserDAO {
      @Transactional(readOnly = true)
     public User findById(long userId) {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("FROM User WHERE id = :userId", User.class)
-                .setParameter("userId", userId)
-                .uniqueResult();
+        // Use session.get to load by primary key (userid)
+        return session.get(User.class, (int) userId);
     }
     @Override
     @Transactional
